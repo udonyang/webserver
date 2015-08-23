@@ -1,6 +1,8 @@
 MAKEFLAGS = ks
 
-srv:
-	csi srv/main.scm -q
+srcdir = src
+srv = ${srcdir}/main.py
+	python ${srv}
+
 
 .PHONY: srv
