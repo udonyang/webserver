@@ -3,6 +3,9 @@ import sys
 import BaseHTTPServer
 import cgi.loginpage
 
+def hearthstone_list():
+  pass
+
 class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
   def do_GET(self):
     index_file = open('html/index.html')
