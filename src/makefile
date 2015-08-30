@@ -2,7 +2,7 @@ run:
 	python main.py 80
 
 test:
-	python main.py 8080
+	python test.py 8080
 
 hsocket:
 	python -c 'import socket; help(socket)'
