@@ -14,10 +14,11 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
     return 0
 
 def main(argv):
-  if len(argv) < 2:
+  if len(argv) < 3:
     return -2
-  port = argv[1]
-  server = BaseHTTPServer.HTTPServer(("localhost", int(port)), Handler)
+  host = argv[1]
+  port = int(argv[2])
+  server = BaseHTTPServer.HTTPServer((host, port), Handler)
   server.serve_forever()
   return 0
 

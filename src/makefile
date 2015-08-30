@@ -1,8 +1,8 @@
 run:
-	python main.py 80
+	python main.py localhost 80
 
 test:
-	python test.py 8080
+	python main.py localhost 8080
 
 hsocket:
 	python -c 'import socket; help(socket)'
