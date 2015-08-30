@@ -21,3 +21,9 @@ hss:
 
 hfile:
 	python -c 'help(file)'
+
+hjinja2:
+	python -c 'import jinja2; help(jinja2)'
+
+hurlparse:
+	python -c 'import urlparse; help(urlparse)'
