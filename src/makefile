@@ -1,4 +1,7 @@
 run:
+	python main.py 80
+
+test:
 	python main.py 8080
 
 hsocket:

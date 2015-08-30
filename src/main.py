@@ -1,13 +1,14 @@
-#!/usr/bin/python
 import os
 import sys
 import BaseHTTPServer
+import cgi.loginpage
 
 class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
   def do_GET(self):
     index_file = open('html/index.html')
     index = ''.join(index_file.readlines())
     index_file.close()
+    self.log_message(self.path);
     self.wfile.write(index)
     self.send_response(200)
     return 0
