@@ -9,7 +9,7 @@ so = socket.socket(
     socket.AF_INET,
     socket.SOCK_STREAM,
     socket.getprotobyname('tcp'))
-so.bind(('localhost', port));
+so.bind(('127.0.0.1', port));
 so_ac = so.listen(5)
 
 while True:
