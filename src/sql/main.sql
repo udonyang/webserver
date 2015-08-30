@@ -1,15 +1,11 @@
 -- hearthstone
 
-create table if not exists hearthstone_deck(
-  name varchar(32) not null,
-  charactor varchar(32) not null,
-  primary key (name, charactor)
-) default charset utf8, engine myisam;
-
-create table if not exists hearthstone_vs(
-  self_deck_name varchar(32),
-  opponent_deck_name varchar(32),
-  is_win int(32) default 0,
-  vstime timestamp default CURRENT_TIMESTAMP,
-  primary key (self_deck_name, opponent_deck_name)
+drop table if exists hearthstone;
+create table if not exists hearthstone(
+  id int(32) unsigned primary key auto_increment,
+  player varchar(32) not null,
+  player_deck varchar(32),
+  opponent_deck varchar(32),
+  is_win int(1) default 1,
+  time timestamp default CURRENT_TIMESTAMP
 ) default charset utf8, engine myisam;

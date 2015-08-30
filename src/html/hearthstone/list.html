@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title id=title>Hearthstone</title>
+  <style>
+    section {
+      margin: 20px;
+    }
+    table, th, td {
+      border-collapse: collapse;
+      border-spacing: 10px;
+      border-color: black;
+      border-width: 1px;
+      border-style: solid;
+      text-align: center;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+  <section>
+    <table>
+      <tr>
+        <th>对局时间</th>
+        <th>暴雪帐号</th>
+        <th>我方套牌</th>
+        <th>对方套牌</th>
+        <th>是否胜利</th>
+      </tr>
+      {% for row in result %}
+        <tr>
+          <td>{{ row['time'] }}</td>
+          <td>{{ row['player'] }}</td>
+          <td>{{ row['player_deck'] }}</td>
+          <td>{{ row['opponent_deck'] }}</td>
+          <td>
+            {% if row['opponent_deck'] == 1 %}
+              是
+            {% else %}
+              否
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+  </section>
+</body>
+</html>
