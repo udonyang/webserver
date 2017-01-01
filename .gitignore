@@ -1,1 +1,5 @@
 *.pyc
+*.dSYM
+*.o
+*.bin
+*.out
