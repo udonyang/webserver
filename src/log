@@ -1,0 +1,3 @@
+INFO: father process exit: pid=93136 sid=77413
+ERR:48: bind failed: msg=(Address already in use)
+INFO: fork as daemon: pid=93137 sid=93137

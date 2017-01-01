@@ -14,8 +14,11 @@ util.o: util.cpp
 clean:
 	rm -rf *.o *.bin *.dSYM
 
+kill:
+	killall -9 $(BIN) 
+
 run:
-	./$(BIN) 127.0.0.1 8080
+	./$(BIN) 127.0.0.1 8080 1
 
 %.o: %.cpp
 	$(GCC) -c $<

@@ -22,8 +22,22 @@ int main(int argc, char** argv)
 
   if (argc < 3)
   {
-    util::logerr("%s <listen-ip> <listen-port>", argv[0]);
+    util::LogErr("%s <listen-ip> <listen-port> [<daemon>]", argv[0]);
     return code::E_ARG;
+  }
+
+  if (argc == 4)
+  {
+    ret = util::ForkAsDaemon();
+    if (ret == code::I_MULTI_FATHER)
+    {
+      return code::OK;
+    }
+    if (ret != code::OK)
+    {
+      util::LogErr("ERR:%d: ForkAsDaemon failed", ret);
+      return ret;
+    }
   }
 
   const char* listen_ip = argv[1];
@@ -32,10 +46,11 @@ int main(int argc, char** argv)
   int listenfd = socket(PF_INET, SOCK_STREAM, getprotobyname("tcp")->p_proto);
   if (listenfd == -1)
   {
-    util::logerr("ERR:%d: socket failed: msg=(%s)", errno,
+    util::LogErr("ERR:%d: socket failed: msg=(%s)", errno,
                  strerror(errno));
     return code::E_SOCKET_CREATE;
   }
+  util::ScopedClose _listenfd(listenfd, close);
 
   struct sockaddr_in listen_sockaddr;
   listen_sockaddr.sin_family = AF_INET;
@@ -43,7 +58,7 @@ int main(int argc, char** argv)
   ret = inet_aton(listen_ip, &listen_sockaddr.sin_addr);
   if (ret != 1)
   {
-    util::logerr("ERR:%d: inet_ntoa failed: ip=(%s) msg=(%s)", errno, 
+    util::LogErr("ERR:%d: inet_ntoa failed: ip=(%s) msg=(%s)", errno, 
                  listen_ip, strerror(errno));
     return code::E_INET_ATON;
   }
@@ -51,7 +66,7 @@ int main(int argc, char** argv)
   ret = bind(listenfd, (struct sockaddr*)&listen_sockaddr, sizeof(struct sockaddr));
   if (ret != 0)
   {
-    util::logerr("ERR:%d: bind failed: msg=(%s)", errno,
+    util::LogErr("ERR:%d: bind failed: msg=(%s)", errno,
                  strerror(errno));
     return code::E_SOCKET_BIND;
   }
@@ -59,12 +74,12 @@ int main(int argc, char** argv)
   ret = listen(listenfd, 16);
   if (ret != 0)
   {
-    util::logerr("ERR:%d: listen failed: msg=(%s)", errno,
+    util::LogErr("ERR:%d: listen failed: msg=(%s)", errno,
                  strerror(errno));
     return code::E_SOCKET_LISTEN;
   }
 
-  util::loginf("INFO: listening %s:%d", listen_ip, listen_port);
+  util::LogInf("INFO: listening %s:%d", listen_ip, listen_port);
 
   while (true)
   {
@@ -73,7 +88,7 @@ int main(int argc, char** argv)
     int acceptfd = accept(listenfd, (struct sockaddr*)&accept_sockaddr, &accept_sockaddrlen);
     if (acceptfd < 0)
     {
-      util::logerr("ERR:%d: accept failed: msg=(%s)", errno,
+      util::LogErr("ERR:%d: accept failed: msg=(%s)", errno,
                    strerror(errno));
       if (errno == EINTR)
       {
@@ -82,8 +97,9 @@ int main(int argc, char** argv)
 
       return code::E_SOCKET_ACCEPT;
     }
+    util::ScopedClose _acceptfd(acceptfd, &close);
 
-    util::loginf("INFO: accept %s:%d", inet_ntoa(accept_sockaddr.sin_addr), ntohs(accept_sockaddr.sin_port));
+    util::LogInf("INFO: accept %s:%d", inet_ntoa(accept_sockaddr.sin_addr), ntohs(accept_sockaddr.sin_port));
 
     string inpkg;
     char readbuf[konst::kBufferSize];
@@ -97,7 +113,7 @@ int main(int argc, char** argv)
           continue;
         }
 
-        util::logerr("ERR:%d: read failed: msg=(%s)", errno,
+        util::LogErr("ERR:%d: read failed: msg=(%s)", errno,
                      strerror(errno));
         break;
       }
@@ -110,46 +126,27 @@ int main(int argc, char** argv)
       inpkg.append(readbuf, ret);
       if (inpkg.size() >= konst::kBufferLimit)
       {
-        util::logerr("ERR:%d: read too much: inpkg_size=%zu", inpkg.size());
+        util::LogErr("ERR:%d: read too much: inpkg_size=%zu", inpkg.size());
         break;
       }
     }
 
-    util::loginf("INFO: inpkg_size=%zu", inpkg.size());
+    util::LogInf("INFO: inpkg_size=%zu", inpkg.size());
 
     string outpkg;
     outpkg.append("HTTP/1.1 200 OK\r\n");
     outpkg.append("\r\n");
     outpkg.append("<html><title>udonyang</title><p>hello world</p><html>");
-    outpkg.append("\r\n");
 
-    int writepos = 0;
-    while (writepos < outpkg.size())
+    ret = util::Write(acceptfd, outpkg);
+    if (ret != code::OK)
     {
-      ret = write(acceptfd, outpkg.data()+writepos, outpkg.size()-writepos);
-      if (ret == 0)
-      {
-        break;
-      }
-      if (ret < 0)
-      {
-        if (errno == EINTR || errno == EAGAIN)
-        {
-          continue;
-        }
-
-        util::logerr("ERR:%d: write failed: msg=(%s)", errno,
-                     strerror(errno));
-        break;
-      }
-      writepos += ret;
+      util::LogErr("ERR:%d: write failed", ret);
+      break;
     }
 
-    util::loginf("INFO: outpkg_size=%zu", outpkg.size());
-
-    close(acceptfd);
+    util::LogInf("INFO: outpkg_size=%zu", outpkg.size());
   }
 
-  close(listenfd);
   return code::OK;
 }
