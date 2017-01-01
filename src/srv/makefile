@@ -1,6 +1,6 @@
 INCS=-I.
-GCC_FLAGS=-lstdc++ -std=gnu++11 -Wall -O2 -g $(INCS)
-GCC=gcc $(GCC_FLAGS)
+GCC_FLAGS=-std=gnu++11 -Wall -O2 -g $(INCS)
+GCC=g++ $(GCC_FLAGS)
 
 BIN=webserver.bin
 
