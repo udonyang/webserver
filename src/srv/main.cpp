@@ -107,6 +107,11 @@ int main(int argc, char** argv)
       }
 
       inpkg.append(readbuf, ret);
+      if (inpkg.size() >= konst::kBufferLimit)
+      {
+        util::logerr("ERR:%d: read too much: inpkg_size=%zu", inpkg.size());
+        break;
+      }
     }
 
     util::loginf("INFO: inpkg_size=%zu", inpkg.size());
