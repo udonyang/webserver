@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include "konst.h"
+
 namespace udon
 {
 namespace util
@@ -10,6 +12,13 @@ namespace util
 void LogInf(const char* format, ...);
 
 void LogErr(const char* format, ...);
+
+int Read(const int& fd, const int& limit, std::string* buf);
+
+inline int Read(const int& fd, std::string* buf)
+{
+  return Read(fd, konst::kBufferLimit, buf);
+}
 
 int Write(const int& fd, const std::string& buf);
 

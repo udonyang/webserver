@@ -8,12 +8,12 @@
 #include <arpa/inet.h>
 
 #include <string>
+#include <sstream>
 
 #include "code.h"
 #include "util.h"
 #include "konst.h"
 
-using namespace std;
 using namespace udon;
 
 int main(int argc, char** argv)
@@ -99,53 +99,48 @@ int main(int argc, char** argv)
     }
     util::ScopedClose _acceptfd(acceptfd, &close);
 
+    struct timeval recvtimeout;
+    recvtimeout.tv_sec = 0;
+    recvtimeout.tv_usec = 10000;
+    ret = setsockopt(acceptfd, SOL_SOCKET, SO_RCVTIMEO,
+                     (const void*)&recvtimeout, sizeof(struct timeval));
+    if (ret != 0)
+    {
+      util::LogErr("ERR:%d: setsockopt failed: msg=(%s)", errno,
+                   strerror(errno));
+      break;
+    }
+
     util::LogInf("INFO: accept %s:%d", inet_ntoa(accept_sockaddr.sin_addr), ntohs(accept_sockaddr.sin_port));
 
-    string inpkg;
-    char readbuf[konst::kBufferSize];
-    while (true)
+    std::string inpkg;
+    ret = util::Read(acceptfd, &inpkg);
+    if (ret != code::OK)
     {
-      ret = read(acceptfd, readbuf, konst::kBufferSize);
-      if (ret <= 0)
-      {
-        if (errno == EINTR || errno == EAGAIN)
-        {
-          continue;
-        }
-
-        util::LogErr("ERR:%d: read failed: msg=(%s)", errno,
-                     strerror(errno));
-        break;
-      }
-
-      if (ret == 0 || ret < konst::kBufferSize)
-      {
-        break;
-      }
-
-      inpkg.append(readbuf, ret);
-      if (inpkg.size() >= konst::kBufferLimit)
-      {
-        util::LogErr("ERR:%d: read too much: inpkg_size=%zu", inpkg.size());
-        break;
-      }
+      util::LogErr("ERR:%d: Read failed", ret);
+      break;
     }
 
     util::LogInf("INFO: inpkg_size=%zu", inpkg.size());
 
-    string outpkg;
-    outpkg.append("HTTP/1.1 200 OK\r\n");
-    outpkg.append("\r\n");
-    outpkg.append("<html><title>udonyang</title><p>hello world</p><html>");
+    std::string content = "<html><title>udonyang</title><p>hello world</p><html>";
+    std::stringstream outpkg;
+    outpkg
+        << "HTTP/1.1 200 OK\r\n"
+        << "Connection: close\r\n"
+        << "Content-Length: " << content.size() << "\r\n"
+        << "\r\n"
+        << content
+        ;
 
-    ret = util::Write(acceptfd, outpkg);
+    ret = util::Write(acceptfd, outpkg.str());
     if (ret != code::OK)
     {
-      util::LogErr("ERR:%d: write failed", ret);
+      util::LogErr("ERR:%d: Write failed", ret);
       break;
     }
 
-    util::LogInf("INFO: outpkg_size=%zu", outpkg.size());
+    util::LogInf("INFO: outpkg_size=%zu", outpkg.str().size());
   }
 
   return code::OK;

@@ -1,6 +1,7 @@
 INCS=-I.
 GCC_FLAGS=-lc -std=gnu++11 -Wall -O2 -g $(INCS)
 GCC=g++ $(GCC_FLAGS)
+IP=$(shell ifconfig en0 inet | egrep '[0-9]+(\.[0-9]+)+' -o | head -n 1)
 
 BIN=webserver.bin
 
@@ -15,10 +16,13 @@ clean:
 	rm -rf *.o *.bin *.dSYM
 
 kill:
-	killall -9 $(BIN) 
+	killall $(BIN) 
 
 run:
-	./$(BIN) 127.0.0.1 8080 1
+	./$(BIN) $(IP) 8080 1
+
+test:
+	curl http://$(IP):8080
 
 %.o: %.cpp
 	$(GCC) -c $<

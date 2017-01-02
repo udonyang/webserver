@@ -11,6 +11,8 @@ enum Code
   E_MULTI_FORK = -401,
 
   /* [-400, -300) I/O error */
+  E_IO_LMIIT = -303,
+  E_IO_READ = -302,
   E_IO_WRITE = -301,
 
   /* [-300, -200) INET error */
