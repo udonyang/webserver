@@ -27,12 +27,12 @@ int ForkAsDaemon();
 class Singleton
 {
  public:
-  Singleton() {}
+  Singleton();
 
-  virtual ~Singleton() {}
+  virtual ~Singleton();
 
  private:
-  void operator = (const Singleton&) {}
+  void operator = (const Singleton&);
 };
 
 template<typename T, typename F>

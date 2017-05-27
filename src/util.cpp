@@ -120,5 +120,17 @@ int Write(const int& fd, const std::string& buf)
   return code::OK;
 }
 
+Singleton::Singleton()
+{
+}
+
+Singleton::~Singleton() 
+{
+}
+
+void Singleton::operator = (const Singleton&) 
+{
+}
+
 }
 }
