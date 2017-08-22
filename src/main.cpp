@@ -139,6 +139,7 @@ int main(int argc, char** argv)
         "<a href='https://mp.weixin.qq.com/mp/profile_ext?__biz=MjM5NDE1ODg2MQ=='>case4. no session</a><br>"
         "<a href='https://mp.weixin.qq.com/s/bfRkhkplm-jSExIkwROLBg'>case5. has session</a><br>"
         "<a href='https://www.baidu.com'>case6. baidu, has session</a><br>"
+        "<iframe src='http://mp.weixin.qq.com/s/XFXD6Y2PC7kF3k9eGbtkuw#wechat_redirect'></iframe>"
         "</html>"
         ;
     std::stringstream outpkg;
