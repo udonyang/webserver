@@ -1,0 +1,44 @@
+<html>
+
+  <p>ajax content begin</p>
+  <p id=p1></p>
+
+  <p>iframe content begin</p>
+  <p id=p2></p>
+
+  <p>video content begin</p>
+  <p id=p3></p>
+
+  <p>audio content begin</p>
+  <p id=p4></p>
+
+  <p>img content begin</p>
+  <p id=p5></p>
+
+  <p>script content begin</p>
+  <p id=p6></p>
+
+  <iframe id="iframe1" rel="noreferer" src="https://mp.weixin.qq.com/safe/queryrole?action=querybyuin&scene=2&f=xml#wechat_redirect"></iframe>
+
+  <script>
+    window.setTimeout(
+        function(){
+          var http = new XMLHttpRequest();
+          http.onloadend = function() {
+            document.getElementById("p1").innerHTML = this.responseText;
+          }
+          http.open("GET", "https://mp.weixin.qq.com/safe/queryrole?action=querybyuin&scene=2#wechat_redirect", true);
+          http.setRequestHeader("Referer", "text/a;text/b;text/c;");
+          http.setRequestHeader("Origin", "2234014040");
+          http.setRequestHeader("Accept", "text/a;text/b;text/c;");
+          http.send();
+
+          alert(document.getElementById("p2").innerHTML = document.getElementById('iframe1').contentDocument.length);
+          alert(document.getElementById("p3").innerHTML = document.getElementById('video1').contentDocument.length);
+          alert(document.getElementById("p4").innerHTML = document.getElementById('audio1').contentDocument.length);
+          alert(document.getElementById("p5").innerHTML = document.getElementById('img1').contentDocument.length);
+          alert(document.getElementById("p6").innerHTML = document.getElementById('script1').contentDocument.length);
+      }, 1000);
+  </script>
+
+</html>
